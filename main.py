@@ -999,16 +999,42 @@ data = """67 69 70 71 72 75 74
 19 16 14 11 10 9
 67 68 70 71 74 76
 """
-count = 0
-answer= 0
-data_list = [[int(num) for num in row.split()] for row in data.splitlines()]
 
-chek_decrease = [all(row[i]>row[i+1] for i in range(len(row)-1)) for row in data_list]
-chek_increase = [all(row[i]<row[i+1] for i in range(len(row)-1)) for row in data_list]
-chek_abs = [all( 1<=abs(row[i]-row[i+1])<=3 for i in range(len(row)-1))for row in data_list]
-print(data_list)
 
-for i in range(len(chek_decrease)):
-    if chek_decrease[i]!=chek_increase[i] and chek_abs[i]:
+def function_change(unsafe, j):
+    if j >= len(unsafe):
+        return False
+    temp_list = unsafe.copy()
+    temp_list.pop(j)
+    if element_check_safe(temp_list):
+        return True
+    else:
+        return function_change(unsafe, j + 1)
+
+
+def element_check_safe(element):
+    is_descending = all(element[i] > element[i + 1] for i in range(len(element) - 1))
+    is_increasing = all(element[i] < element[i + 1] for i in range(len(element) - 1))
+    is_different = all(1 <= abs(element[i] - element[i + 1]) <= 3 for i in range(len(element) - 1))
+    if is_different and is_increasing != is_descending:
+        return True
+    else:
+        return False
+
+def function_check(dat):
+    count = 0
+    list_unsafe = []
+    data_list = [[int(num) for num in row.split()] for row in dat.splitlines()]
+    for i in range(len(data_list)):
+        if element_check_safe(data_list[i]):
+            count += 1
+        else:
+            list_unsafe.append(data_list[i])
+    return list_unsafe,count
+
+light_list,count = function_check(data)
+for i in range(len(light_list)):
+    if function_change(light_list[i],0):
         count+=1
 print(count)
+
